@@ -1,0 +1,80 @@
+{% load static %}
+
+
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+    <title>Surf Logs</title>
+
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.2.1/css/bootstrap.min.css" integrity="sha384-GJzZqFGwb1QTTN6wy59ffF1BuGJpLSa9DkKMp0DgiMDm4iYMj70gZWKYbI706tWS" crossorigin="anonymous">
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.2.1/js/bootstrap.min.js" integrity="sha384-B0UglyR+jN6CkvvICOB2joaf5I4l3gm9GU6Hc1og6Ls7i6U/mkkaduKaBhlAXv9k" crossorigin="anonymous"></script>
+    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.5.0/css/all.css" integrity="sha384-B4dIYHKNBt8Bc12p+WXckhzcICo0wtJAoU8YZTY5qE0Id1GSseTk6S+L3BlXeVIU" crossorigin="anonymous">
+    <link rel="stylesheet" href="{% static 'logs/surfLogs.css' %}" type="text/css">
+    <link rel="stylesheet" href="{% static 'logs/signup.css' %}" type="text/css">
+    <link rel="stylesheet" href="{% static 'logs/surfLogs.js' %}" type="text/css">
+</head>
+
+<body style="color:white; background-color: black;">
+    <div class="img-responsive bigBg">
+        <div class="container">
+
+            <div class="row">
+                <div class="col-lg-12 mt-5">
+                    <h1 class="text-center">Remember your best surf sessions.</h1>
+                </div>
+            </div>
+            <div class="row pb-5">
+                <div class="col-lg-12">
+                    <h1 class="text-center">Learn from your worst.</h1>
+                </div>
+            </div>
+            <br>
+            <br>
+            <div class="row">
+                <div class="col-md-4 text-center pt-2">
+                    <img src="https://i.imgur.com/BtCP3kJ.png" class="index_icon" title="source: imgur.com" />
+                    <h3 class="text-center pt-1">Log surf sessions</h3>
+                </div>
+                <div class="col-md-4 text-center pt-2">
+                    <img src="https://i.imgur.com/ZeaCFq6.png" class="index_icon" title="source: imgur.com" />
+                    <h3 class="text-center pt-1">Analyze your surfing data</h3>
+                </div>
+                <div class="col-md-4 text-center pt-2">
+                    <img src="https://i.imgur.com/oMpqoUc.png" class="index_icon" title="source: imgur.com" />
+                    <h3 class="text-center pt-1">Track your favorite spots</h3>
+                </div>
+            </div>
+            <br>
+            <br>
+            <div class="row">
+                <div class="col-lg-12">
+                    <h1 class="text-center p-5 display-4 font-weight-normal">Surf Logs</h1>
+                </div>
+            </div>
+            <div class="row p-4">
+                <div class="col-md-4">
+                </div>
+                <div class="col-md-2 text-center pt-3">
+                    <a href="{% url 'logs:signup' %}" class="btn btn-default text-white border-white">Sign Up</a>
+                </div>
+                <div class="col-md-2 text-center pt-3">
+                    {% if user %}
+                    <a href="{% url 'logs:profile' %}" class="btn btn-default text-white border-white">Profile</a>
+                    {% else %}
+                    <a href="{% url 'logs:login' %}" class="btn btn-default text-white border-white">Login</a>
+                    {% endif %}
+                </div>
+                <div class="col-md-4">
+                </div>
+            </div>
+
+    </div>
+    </div>
+</body>
+
+
+
+</html>

@@ -1,0 +1,15 @@
+{% extends 'base.html' %}
+{% load crispy_forms_tags %}
+
+{% block content %}
+<h1 class="mt-2">New Spot</h1>
+
+<form method="post" enctype="multipart/form-data">
+    {% csrf_token %}
+    {{ new_spot_form|crispy }}
+    <div class="center">
+        <button type="submit" class="btn nav-color">Save</button>
+    </div>
+    <p> {{ errors }} </p>
+</form>
+{% endblock %}

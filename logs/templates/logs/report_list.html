@@ -1,0 +1,33 @@
+{% load static %}
+
+{% block content %}
+<table class="table table-borderless table-hover">
+  <thead>
+    <tr>
+        {% for header in report_headers%}
+        <th scope="col">{{ header }}</th>
+        {% endfor %}
+    </tr>
+  </thead>
+  <tbody>
+    {% for report in reports %}
+    <tr class='clickable-row' data-href="">
+      <th scope="row"><a href="{% url 'logs:user_summary' report.user.username %}">{{ report.user.username }}</a></th>
+      <td>{{ report.date.date }}</td>
+      <td><a href="{% url 'logs:spot_view' report.spot.name %}">{{ report.spot.name }}</a></td>
+      <td>{{ report.time }}</td>
+      <td>{{ report.wave_quality }}</td>
+      <td>{{ report.rating }}</td>
+    </tr>
+    {% endfor %}
+  </tbody>
+</table>
+
+<script>
+    jQuery(document).ready(function($) {
+        $(".clickable-row").click(function() {
+            window.location = $(this).data("href");
+        });
+    });
+</script>
+{% endblock %}

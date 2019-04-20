@@ -1,0 +1,77 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block content %}
+<script src="{% static 'logs/spot_view.js' %}"></script>
+
+<!-- really want a big header with a spot image -->
+<div class="row">
+    <div class="col-md-12 text-center">
+        <h2> {{ spot.name }} </h2>
+        <br>
+        <p> {{ spot.type }} <p>
+        <p> {{ spot.location }} </p>
+        <p> {{ spot.description }} </p>
+    </div>
+</div>
+<br>
+<div>
+    <div class="row mb-4">
+        <div class="col-md-6 text-center">
+            <p> Sessions Logged</p>
+            <h5>{{ numSessions }}</h5>
+        </div>
+        <div class="col-md-6 text-center">
+            <p> People Surfed Here</p>
+            <h5>{{ numSurfers }}</h5>
+        </div>
+    </div>
+    <div class="row mb-4">
+        <div class="col-md-6 text-center">
+            <p> Best Period </p>
+            <h5> {{ spot.ideal_swell_period }} </h5>
+        </div>
+        <div class="col-md-6 text-center">
+            <p> Best Size </p>
+            <h5> {{ ideal_swell_height }} ft</h5>
+        </div>
+    </div>
+    <div class="row mb-4">
+        <div class="col-md-4 text-center">
+            <p> Best Wind Direction </p>
+            <h5>{{numSessions}}</h5>
+        </div>
+        <div class="col-md-4 text-center">
+            <p> Best Period </p>
+            <h5> {{waveCount}} </h5>
+        </div>
+        <div class="col-md-4 text-center">
+            <p> Time Surfed </p>
+            <h5> {{timeSurfed}} {{unitsSurfed}} </h5>
+        </div>
+    </div>
+</div>
+<br>
+
+<div class="row">
+    <div class="col-md-8">
+        <h3 id="lower_header"> Sessions <h3>
+    </div>
+    <div class="col-lg-1 mr-3">
+        <button class="btn" id="session_filter" onclick="filter_click('session')">Sessions</button>
+    </div>
+    <div class="col-lg-1 ml-3">
+        <button class="btn" id="report_filter" onclick="filter_click('report')">Reports</button>
+    </div>
+
+</div>
+<hr>
+
+<div id="session_table" class="m-5">
+    {% include "logs/session_list.html" %}
+</div>
+<div id="report_table" class="m-5"style="display:none">
+    {% include "logs/report_list.html" %}
+</div>
+
+{% endblock %}

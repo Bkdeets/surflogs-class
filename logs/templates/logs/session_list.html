@@ -1,0 +1,33 @@
+{% load static %}
+
+{% block content %}
+<table class="table table-borderless table-hover">
+  <thead>
+    <tr>
+        {% for header in session_headers %}
+        <th scope="col">{{ header }}</th>
+        {% endfor %}
+    </tr>
+  </thead>
+  <tbody>
+    {% for session in sessions %}
+    <tr class='clickable-row' data-href="{% url 'logs:detail' session.session_id %}">
+      <th scope="row"><a href="{% url 'logs:user_summary' session.user.username %}">{{ session.user.username }}</a></th>
+      <td>{{ session.date.date }}</td>
+      <td><a href="{% url 'logs:spot_view' session.spot.name %}">{{ session.spot.name }}</a></td>
+      <td>{{ session.start_time }}</td>
+      <td>{{ session.end_time }}</td>
+      <td>{{ session.rating }}</td>
+    </tr>
+    {% endfor %}
+  </tbody>
+</table>
+
+<script>
+    jQuery(document).ready(function($) {
+        $(".clickable-row").click(function() {
+            window.location = $(this).data("href");
+        });
+    });
+</script>
+{% endblock %}

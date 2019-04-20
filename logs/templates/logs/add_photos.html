@@ -1,0 +1,23 @@
+{% extends 'base.html' %}
+{% load static %}
+{% load crispy_forms_tags %}
+
+
+{% block content %}
+<h1 class="mt-2">Add Photos</h1>
+<hr>
+
+<form method="post" enctype="multipart/form-data" novalidate>
+    {% csrf_token %}
+    <div class=card>
+        <div class="card-body">
+            {{ image_form|crispy }}
+        </div>
+    </div>
+    <br>
+    <div class="center">
+        <button type="submit" class="btn nav-color text-white">Add</button>
+    </div>
+    <br>
+</form>
+{% endblock %}
