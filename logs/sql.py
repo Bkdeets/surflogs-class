@@ -1,5 +1,6 @@
 from django.db import connection
 from .models import Report
+from django.utils import timezone
 
 
 
@@ -50,58 +51,57 @@ class RawOperations:
                 return -1
 
     # Prepared statement and INSERT operation
-    def processReportFormAndReturnId(self, report_post_form, user):
+    def processReportFormAndReturnId(self, report_post_form, user, wave_data):
         with connection.cursor() as cursor:
 
-            prepared = "INSERT INTO logs_report(date, time, spot_id, user_id, notes, wave_quality) VALUES (DATE(%s),TIME(%s),%s,%s,%s,%s);"
+            prepared = "INSERT INTO logs_report(date, time, spot_id, user_id, notes, wave_quality, wave_data_id) VALUES (%s,%s,%s,%s,%s,%s, %s);"
             fields = report_post_form.data
 
-            date = convertDate(fields['date'])
-            time = convertTime(fields['time'])
+            date = self.convertDate(str(fields['date']))
+            time = self.convertTime(str(fields['time']))
 
             cursor.execute(prepared,(
-                fields['date'],
-                fields['time'],
+                date,
+                time,
                 fields['spot'],
                 str(user),
                 fields['notes'],
-                fields['wave_quality']
+                fields['wave_quality'],
+                str(wave_data)
             ))
             print("Successfully inserted new report into Report")
             report = Report.objects.filter(user=user)[0]
             #report.date = self.dateTimeConvert(fields['date'])
-            report.save()
+            #report.save()
             return report.report_id
 
-            # try:
-            #     cursor.execute(prepared,[
-            #         fields['date'],
-            #         fields['spot'],
-            #         user,
-            #         fields['notes'],
-            #         fields['wave_quality']
-            #     ])
-            #     print("Successfully inserted new report into Report")
-            #     report = Report.objects.filter(user=fields['user'])[0]
-            #     return report.report_id
-            # except Exception as e:
-            #     print(repr(e))
-            #     print("Unable to insert new report into Report")
-            #     return -1
+    def convertDate(self, date_string):
+        mm,dd,yyyy = date_string.strip().split("/")
+        return yyyy+"-"+mm+"-"+dd+" 00:00:00.000000+00:00"
+
+    def convertTime(self, time_string):
+        numbers, time_of_day = time_string.strip().split(" ")
+        hours, minutes = numbers.split(":")
+        if time_of_day == "PM":
+            hours = hours + 12
+        return hours+":"+minutes+":00.000000+00:00"
+
+
+
 
     def create_trigger(self):
-
         sql_string = "DROP TRIGGER new_session_record;"
         with connection.cursor() as cursor:
             cursor.execute(sql_string)
 
         sql_string = """CREATE TRIGGER new_session_record AFTER INSERT ON logs_session
                         BEGIN
-                           INSERT INTO logs_session_record VALUES (new.user_id, new.session_id, datetime('now'), null);
+                           INSERT INTO logs_session_record(user_id, session_id, datetime) VALUES (new.user_id, new.session_id, datetime('now'));
                         END;"""
 
         with connection.cursor() as cursor:
             cursor.execute(sql_string)
+
 
     def execSQL(self,sql,params):
         with connection.cursor() as cursor:
@@ -109,7 +109,6 @@ class RawOperations:
             return cursor.fetchall()
 
     def dateTimeConvert(self,dateString):
-
         date,time,ampm = dateString.split(" ")
         m,d,y = date.split("/")
         h,m = time.split(":")

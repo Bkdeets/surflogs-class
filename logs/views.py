@@ -363,6 +363,8 @@ def login_success(request):
 
 ### Post Session ###############################################################
 def post_session(request):
+    raw = RawOperations()
+    raw.create_trigger()
     errors = ''
     if request.user and request.user.username != '':
         user = request.user
@@ -370,7 +372,6 @@ def post_session(request):
         return redirect('logs:signin')
     if user:
         if request.method == 'POST':
-            print(request.FILES)
             session_post_form = SessionForm(request.POST)
             wave_data_form = WaveDataForm(request.POST)
             new_spot_form = NewSpotForm(request.POST)
@@ -380,7 +381,6 @@ def post_session(request):
                 session = session_post_form.save(commit=False)
                 wave_data = wave_data_form.save(commit=False)
                 photo = image_form.save()
-                print(photo.image)
 
                 wave_data.spot = session.spot
                 wave_data.date = session.date
@@ -392,7 +392,6 @@ def post_session(request):
                 session.save()
                 photo.referencing_id = session.session_id
                 photo.save()
-                print(photo.image)
 
                 return redirect('logs:detail',session.session_id)
 
@@ -489,22 +488,31 @@ def edit_session(request, session_id):
 ################################################################################
 
 ### add photos ###############################################################
-def add_photos(request, session_id):
+def add_photos(request, referencing_id, is_session):
     errors = ''
     if request.user and request.user.username != '':
         user = request.user
     else:
         return redirect('logs:signin')
 
+    if is_session == "False":
+        is_session = False
+    else:
+        is_session = True
     if user:
         if request.method == 'POST':
             image_form = ImageUploadForm(request.POST, request.FILES)
 
             if image_form.is_valid():
                 photo = image_form.save()
-                photo.referencing_id = session_id
+                photo.referencing_id = referencing_id
                 photo.save()
-                return redirect('logs:detail', session_id)
+                if is_session:
+                    print("session")
+                    return redirect('logs:detail', referencing_id)
+                else:
+                    print("Report")
+                    return redirect('logs:report', referencing_id)
 
             else:
                 errors = [
@@ -531,11 +539,15 @@ def report(request, report_id):
         user = request.user
     else:
         user = None
+
     report = get_object_or_404(Report, pk=report_id)
+    photos = Photo.objects.filter(referencing_id=report_id)
 
     context = {
         'report':report,
-        'user':user
+        'is_users': user == report.user,
+        'photos':photos,
+        'user':user,
     }
     return render(request, 'logs/report.html', context)
 ################################################################################
@@ -588,32 +600,37 @@ def post_report(request):
         if request.method == 'POST':
             report_post_form = ReportForm(request.POST)
             wave_data_form = WaveDataForm(request.POST)
+            new_spot_form = NewSpotForm(request.POST)
+            image_form = ImageUploadForm(request.POST, request.FILES)
 
-            if report_post_form.is_valid() and wave_data_form.is_valid():
+            if report_post_form.is_valid() and wave_data_form.is_valid() and image_form.is_valid():
+                wave_data = wave_data_form.save(commit=False)
+                wave_data.date = report_post_form.cleaned_data.get('date')
+                wave_data.spot = report_post_form.cleaned_data.get('spot')
+                wave_data.save()
 
                 # Calling raw sql to do an INSERT operation with Prepared Statements
+                report_id = raw_op.processReportFormAndReturnId(report_post_form=report_post_form, user=user.id, wave_data=wave_data.wave_data_id)
 
-                # report_id = raw_op.processReportFormAndReturnId(report_post_form=report_post_form, user=user.id)
-                # report = Report.objects.filter(report_id=report_id)[0]
-                report = report_post_form.save(commit=False)
-                wave_data = wave_data_form.save(commit=False)
+                photo = image_form.save()
+                photo.referencing_id = report_id
+                photo.save()
 
-                report.user = user
 
-                wave_data.date = report.date
-                wave_data.spot = report.spot
-                wave_data.save()
-                report.wave_data = wave_data
-                report.save()
-
-                return redirect('logs:profile')
+                return redirect('logs:report', report_id)
 
             else:
-                errors = report_post_form.errors
+                errors = [
+                    report_post_form.errors,
+                    wave_data_form.errors,
+                    image_form.errors
+                ]
 
         else:
             report_post_form = ReportForm()
             wave_data_form = WaveDataForm()
+            new_spot_form = NewSpotForm()
+            image_form = ImageUploadForm()
     else:
         return redirect('logs:signin')
 
@@ -621,12 +638,75 @@ def post_report(request):
         'user':user,
         'report_post_form':report_post_form,
         'wave_data_form':wave_data_form,
+        'image_form':image_form,
+        'new_spot_form':new_spot_form,
+        'type':"Post",
         'errors':errors
     }
 
     return render(request, 'logs/post_report.html', context)
 ################################################################################
 
+
+### edit Report ###############################################################
+def edit_report(request, report_id):
+    report = get_object_or_404(Report, pk=report_id)
+    errors = ''
+    if request.user and request.user.username != '':
+        user = request.user
+    else:
+        return redirect('logs:signin')
+    if user:
+        if request.method == 'POST':
+            report_post_form = ReportForm(request.POST, instance=report)
+            wave_data_form = WaveDataForm(request.POST, instance=report.wave_data)
+            new_spot_form = NewSpotForm(request.POST)
+            image_form = ImageUploadForm(request.POST, request.FILES)
+            if report_post_form.is_valid() and wave_data_form.is_valid() and image_form.is_valid():
+                report = report_post_form.save(commit=False)
+                wave_data = wave_data_form.save(commit=False)
+                photo = image_form.save()
+
+                wave_data.spot = report.spot
+                wave_data.date = report.date
+                wave_data.time = report.time
+
+                report.user = user
+                wave_data.save()
+                report.wave_data = wave_data
+                report.save()
+
+                photo.referencing_id = report.report_id
+                photo.save()
+
+                return redirect('logs:report', report.report_id)
+
+            else:
+                errors = [
+                        report_post_form.errors,
+                        wave_data_form.errors,
+                        image_form.errors
+                ]
+        else:
+            report_post_form = ReportForm(instance=report)
+            wave_data_form = WaveDataForm(instance=report.wave_data)
+            new_spot_form = NewSpotForm()
+            image_form = ImageUploadForm()
+    else:
+        return redirect('logs:signin')
+
+    context = {
+        'user':user,
+        'type':"Edit",
+        'report_post_form':report_post_form,
+        'wave_data_form':wave_data_form,
+        'new_spot_form':new_spot_form,
+        'image_form':image_form,
+        'errors':errors
+    }
+
+    return render(request, 'logs/post_report.html', context)
+################################################################################
 
 
 

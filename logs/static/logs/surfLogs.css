@@ -310,7 +310,7 @@
      width: 250px;
      position: fixed;
      z-index: 1;
-     top: 150px;
+     top: 121px;
      right: 30px;
      overflow-x: hidden;
      padding: 8px;
@@ -359,4 +359,20 @@
 .centered {
     margin:0 auto;
     float:none;
+}
+
+.has-search .form-control {
+    padding-left: 2.375rem;
+}
+
+.has-search .form-control-feedback {
+    position: absolute;
+    z-index: 2;
+    display: block;
+    width: 2.375rem;
+    height: 2.375rem;
+    line-height: 2.375rem;
+    text-align: center;
+    pointer-events: none;
+    color: #aaa;
 }

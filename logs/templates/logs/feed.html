@@ -19,16 +19,31 @@
 </div>
 -->
 
+
+
 <div class="container">
+
+    <div class="input-group">
+        <input type="text" class="form-control" placeholder="Search Surflogs">
+        <div class="input-group-append">
+            <button class="btn btn-secondary" type="button">
+                <i class="fa fa-search"></i>
+            </button>
+        </div>
+    </div>
+
+    <br>
+    <br>
+
     {% for session in sessions_with_image %}
     <div id="card_view" class="card mb-5 clickable-card" data-href="{% url 'logs:detail' session.0.session_id %}">
         <div class="card-body">
             <h5 class="card-title">{{session.0.user.username}}</h5>
         </div>
         {% if session.1 %}
-            <img class="card-img-top" src="{{session.1.image.url}}" alt="No Image">
+        <img class="card-img-top" src="{{session.1.image.url}}" alt="No Image">
         {% else %}
-            <div style="height:10px;"></div>
+        <div style="height:10px;"></div>
         {% endif %}
         <div class="card-body">
             <div class="row">
@@ -78,7 +93,7 @@
     </div>
 </div>
 
-<div class="card shadow" >
+<div class="card shadow">
     <div class="user-side-scroll shadow rounded card-body bg-white" style="top: 375px;">
         <div class="row">
             <div class="col-md-12 text-center">

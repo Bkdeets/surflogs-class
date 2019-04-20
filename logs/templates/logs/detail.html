@@ -1,20 +1,18 @@
-{% extends 'base.html' %}
-
+{% extends 'feed_base.html' %}
 {% load static %}
-
 
 {% block content %}
 <script>
     $('.carousel').carousel()
 </script>
 {% if is_users %}
-<div class="side-scroll container shadow rounded">
+<div class="user-side-scroll container shadow rounded card-body bg-white">
     <div class="row">
         <div class="col-md-12">
             <a href="{% url 'logs:edit_session' session.session_id %}" class="btn w-100" target="_blank">Edit</a>
         </div>
         <div class="col-md-12">
-            <a href="{% url 'logs:add_photos' session.session_id %}" class="btn w-100" target="_blank">Add Photos</a>
+            <a href="{% url 'logs:add_photos' session.session_id  True%}" class="btn w-100" target="_blank">Add Photos</a>
         </div>
         <div class="col-md-12">
             <button class="btn w-100" id="session_filter">Make Private</button>
@@ -22,76 +20,70 @@
     </div>
 </div>
 {% endif %}
-<div class="row">
-
-    <div class="col-md-12 text-center">
-        <h2> {{session.spot.name}} </h2>
-        <h5> {{session.date.date}} </h5>
-        <h6> {{session.start_time}} - {{session.end_time}}</h6>
-        <br>
-        <a href="{% url 'logs:user_summary' session.user.username %}" <h5> {{session.user.username}} </h5></a>
-        <br>
-        <br>
-        <p> {{session.notes}}</p>
-    </div>
-</div>
-<div class="bottom">
-    <br>
-    <div class="row text-center" id="row2">
-        <div class="data col-md-12">
-            <div class="row mb-4">
-                <div class="col-md-4">
-                    <p> Rating </p>
-                    <h5>{{ session.rating }}</h5>
-                </div>
-                <div class="col-md-4">
-                    <p> Wave Count </p>
-                    <h5> {{ session.waves_caught }} </h5>
-                </div>
-                <div class="col-md-4">
-                    <p> Time Surfed </p>
-                    {% for tuple in time_surfed_tuples %}
-                    <h5>{{ tuple.1 }} {{ tuple.0 }}</h5>
-                    {% endfor %}
-                </div>
+<div class="card">
+    <div class="card-body">
+        <div class="row">
+            <div class="col-md-12 text-center">
+                <h2> {{session.spot.name}} </h2>
+                <h5> {{session.date.date}} </h5>
+                <h6> {{session.start_time}} - {{session.end_time}}</h6>
+                <br>
+                <a href="{% url 'logs:user_summary' session.user.username %}" <h5> {{session.user.username}} </h5></a>
+                <br>
+                <br>
+                <p> {{session.notes}}</p>
             </div>
-            <div class="row mb-4">
-                <div class="col-md-4">
-                    <p> Wave Height </p>
-                    <h5> {{ session.wave_data.wave_height }} </h5>
-                </div>
-                <div class="col-md-4">
-                    <p> Wave Period</p>
-                    <h5> {{ session.wave_data.wave_period }} </h5>
-                </div>
-                <div class="col-md-4">
-                    <p> Conditions </p>
-                    <h5> {{ session.wave_data.conditions }} </h5>
+        </div>
+        <div class="bottom">
+            <br>
+            <div class="row text-center" id="row2">
+                <div class="data col-md-12">
+                    <div class="row mb-4">
+                        <div class="col-md-4">
+                            <p> Rating </p>
+                            <h5>{{ session.rating }}</h5>
+                        </div>
+                        <div class="col-md-4">
+                            <p> Wave Count </p>
+                            <h5> {{ session.waves_caught }} </h5>
+                        </div>
+                        <div class="col-md-4">
+                            <p> Time Surfed </p>
+                            {% for tuple in time_surfed_tuples %}
+                            <h5>{{ tuple.1 }} {{ tuple.0 }}</h5>
+                            {% endfor %}
+                        </div>
+                    </div>
+                    <div class="row mb-4">
+                        <div class="col-md-4">
+                            <p> Wave Height </p>
+                            <h5> {{ session.wave_data.wave_height }} </h5>
+                        </div>
+                        <div class="col-md-4">
+                            <p> Wave Period</p>
+                            <h5> {{ session.wave_data.wave_period }} </h5>
+                        </div>
+                        <div class="col-md-4">
+                            <p> Conditions </p>
+                            <h5> {{ session.wave_data.conditions }} </h5>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
     </div>
-</div>
-<!--
-{% for photo in photos %}
-<div class="row">
-    <div class="col-lg-12 m-1">
-        <img class="d-block frontImg" src="{{ photo.image.url }}" alt="Img slide">
+
+
+    <div class="card-body">
+        <div class="gallery mt-5" id="gallery">
+            {% for photo in photos %}
+            <div class="mb-3 pics animation all 2">
+                <img class="img-fluid img-respondive" src="{{ photo.image.url }}" alt="Card image cap">
+            </div>
+            {% endfor %}
+        </div>
     </div>
 </div>
-{% endfor %} -->
-
-
-
-<div class="gallery mt-5" id="gallery">
-  {% for photo in photos %}
-  <div class="mb-3 pics animation all 2">
-    <img class="img-fluid img-respondive" src="{{ photo.image.url }}" alt="Card image cap">
-  </div>
-  {% endfor %}
-</div>
-
-
 
 <script>
     $('.carousel').carousel()

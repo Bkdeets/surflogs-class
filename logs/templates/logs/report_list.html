@@ -11,7 +11,7 @@
   </thead>
   <tbody>
     {% for report in reports %}
-    <tr class='clickable-row' data-href="">
+    <tr class='clickable-row' data-href="{% url 'logs:report' report.report_id %}">
       <th scope="row"><a href="{% url 'logs:user_summary' report.user.username %}">{{ report.user.username }}</a></th>
       <td>{{ report.date.date }}</td>
       <td><a href="{% url 'logs:spot_view' report.spot.name %}">{{ report.spot.name }}</a></td>
