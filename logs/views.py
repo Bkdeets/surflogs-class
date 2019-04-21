@@ -158,7 +158,7 @@ def profile(request):
         ## Aggregate queries
         numSessions = raw_op.execSQL('SELECT COUNT(*) FROM logs_session WHERE user_id = %s',[user.id])[0][0]
         waveCount = raw_op.execSQL('SELECT SUM(waves_caught) FROM logs_session WHERE user_id = %s',[user.id])[0][0]
-        averageRating = raw_op.execSQL('SELECT AVG(rating) FROM logs_session WHERE user_id = %s',[user.id])[0][0]
+        averageRating = round(raw_op.execSQL('SELECT AVG(rating) FROM logs_session WHERE user_id = %s',[user.id])[0][0],2)
 
         ## Nested queries
         averageWaveHeight = raw_op.execSQL('SELECT AVG(wave_height) FROM logs_wave_data WHERE (SELECT wave_data_id FROM logs_session WHERE user_id = %s) = logs_wave_data.wave_data_id;',[user.id])[0][0]
@@ -192,8 +192,8 @@ def profile(request):
         timeSurfed = maxim[1]
         unitsSurfed = maxim[0]
 
+        is_users = True
 
-        users = User.objects.all()
         context = {
             'user':user,
             'sessions':sessions,
@@ -208,7 +208,7 @@ def profile(request):
             'averageWaveHeight':averageWaveHeight,
             'avgStartTime':avgStartTime,
             'avgEndTime':avgEndTime,
-            'users': users
+            'is_users':is_users
         }
         return render(request, 'logs/profile.html',context)
     else:
@@ -792,6 +792,8 @@ def spot_view(request, spot_name="default"):
 def autoclose(request):
     return render(request, 'logs/autclose.html')
 ################################################################################
+
+
 
 ## delete session ############################################################
 def delete_session(request, session_id):

@@ -20,6 +20,7 @@
     <link rel="stylesheet" href="{% static 'logs/profile.css' %}" type="text/css">
     <link rel="stylesheet" href="{% static 'logs/surfLogs.js' %}" type="text/css">
     <script src="{% static 'logs/profile.js' %}"></script>
+    <link rel="stylesheet" href="{% static 'logs/open-iconic-master/font/css/open-iconic-bootstrap.css' %}" type="text/css">
 </head>
 
 <body>
@@ -60,15 +61,15 @@
                                     <div class="row mb-4">
                                         <div class="col-md-4">
                                             <p> Average Rating </p>
-                                            <h5> {{averageRating}} </h5>
+                                            <h5> {{ averageRating }} </h5>
                                         </div>
                                         <div class="col-md-4">
-                                            <p> Average Length</p>
-                                            <h5> {{avgSessionLength}} </h5>
+                                            <p> Average Length </p>
+                                            <h5> {{avgSessionLength}} Minutes </h5>
                                         </div>
                                         <div class="col-md-4">
-                                            <p> Average Waves </p>
-                                            <h5> {{averageWaveHeight}} </h5>
+                                            <p> Average Wave Height </p>
+                                            <h5> {{averageWaveHeight}} ft</h5>
                                         </div>
                                     </div>
                                     <div class="row">

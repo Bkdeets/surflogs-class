@@ -64,6 +64,22 @@
     }
 }
 
+@media (max-width: 1113px) {
+    .profile_pic {
+        margin:0 auto;
+        display: block;
+        width: 250px;
+    }
+}
+
+@media (max-width: 801px) {
+    .profile_pic {
+        margin:0 auto;
+        display: block;
+        width: 220px;
+    }
+}
+
 .about {
     text-align: center;
 }

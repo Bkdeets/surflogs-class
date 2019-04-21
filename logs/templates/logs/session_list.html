@@ -1,7 +1,8 @@
 {% load static %}
 
 {% block content %}
-<table class="table table-borderless table-hover">
+<div style="overflow:hidden;">
+<table class="table table-borderless table-hover" style="overflow-x:auto;">
   <thead>
     <tr>
         {% for header in session_headers %}
@@ -11,23 +12,43 @@
   </thead>
   <tbody>
     {% for session in sessions %}
-    <tr class='clickable-row' data-href="{% url 'logs:detail' session.session_id %}">
-      <th scope="row"><a href="{% url 'logs:user_summary' session.user.username %}">{{ session.user.username }}</a></th>
-      <td>{{ session.date.date }}</td>
-      <td><a href="{% url 'logs:spot_view' session.spot.name %}">{{ session.spot.name }}</a></td>
-      <td>{{ session.start_time }}</td>
-      <td>{{ session.end_time }}</td>
-      <td>{{ session.rating }}</td>
-    </tr>
+        <tr class='clickable-row' data-href="{% url 'logs:detail' session.session_id %}" id="{{session.session_id}}"">
+          <th scope="row"><a href="{% url 'logs:user_summary' session.user.username %}">{{ session.user.username }}</a></th>
+          <td>{{ session.date.date }}</td>
+          <td><a href="{% url 'logs:spot_view' session.spot.name %}">{{ session.spot.name }}</a></td>
+          <td>{{ session.start_time }}</td>
+          <td>{{ session.end_time }}</td>
+          <td>{{ session.rating }}</td>
+      {% if is_users %}
+        <td><span class="oi oi-circle-x" onclick="confirmDelete({{session.session_id}})"></span></td>
+      {% endif %}
+              </tr>
+
     {% endfor %}
   </tbody>
 </table>
-
+</div>
 <script>
+    var in_confirm = false;
     jQuery(document).ready(function($) {
-        $(".clickable-row").click(function() {
-            window.location = $(this).data("href");
-        });
+        if(!in_confirm) {
+            $(".clickable-row").click(function() {
+                window.location = $(this).data("href");
+            });
+        } else {
+            in_confirm = false;
+        }
     });
+
+    function confirmDelete(id) {
+        in_confirm = true;
+        var is_delete = confirm("Delete this session?");
+        if (is_delete == true) {
+            window.open("/"+id.toString()+"/delete_session");
+            location.reload();
+        } else {
+            location.href="/profile";
+        }
+    }
 </script>
 {% endblock %}

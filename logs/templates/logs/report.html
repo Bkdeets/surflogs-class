@@ -20,7 +20,7 @@
             <button class="btn w-100" id="report_filter">Make Private</button>
         </div>
         <div class="col-md-12">
-            <a href="{% url 'logs:delete_report' report.report_id %}" class="btn w-100" target="_blank">Delete</a>
+            <button class="btn w-100" onclick="confirmDelete()">Delete</button>
         </div>
     </div>
 </div>
@@ -73,6 +73,14 @@
 
 
 <script>
-    $('.carousel').carousel()
+    $('.carousel').carousel();
+
+    function confirmDelete() {
+        var is_delete = confirm("Delete this report?");
+        if (is_delete == true) {
+            var id = {{ report.report_id }};
+            location.href="/"+id.toString()+"/delete_report";
+        }
+    }
 </script>
 {% endblock %}

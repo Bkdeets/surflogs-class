@@ -3,7 +3,7 @@
 
 {% block content %}
 <script>
-    $('.carousel').carousel()
+    $('.carousel').carousel();
 </script>
 {% if is_users %}
 <div class="user-side-scroll container shadow rounded card-body bg-white">
@@ -18,7 +18,7 @@
             <button class="btn w-100" id="session_filter">Make Private</button>
         </div>
         <div class="col-md-12">
-            <a href="{% url 'logs:delete_session' session.session_id %}" class="btn w-100" target="_blank">Delete</a>
+            <button class="btn w-100" onclick="confirmDelete()">Delete</button>
         </div>
     </div>
 </div>
@@ -89,6 +89,14 @@
 </div>
 
 <script>
-    $('.carousel').carousel()
+    $('.carousel').carousel();
+
+    function confirmDelete() {
+        var is_delete = confirm("Delete this session?");
+        if (is_delete == true) {
+            var id = {{ session.session_id }};
+            location.href="/"+id.toString()+"/delete_session";
+        }
+    }
 </script>
 {% endblock %}
