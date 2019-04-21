@@ -19,6 +19,9 @@
         <div class="col-md-12">
             <button class="btn w-100" id="report_filter">Make Private</button>
         </div>
+        <div class="col-md-12">
+            <a href="{% url 'logs:delete_report' report.report_id %}" class="btn w-100" target="_blank">Delete</a>
+        </div>
     </div>
 </div>
 {% endif %}

@@ -3,5 +3,8 @@
 {% block content %}
 <br>
 <br>
-<h3 class="mt-2">Successful update. You may close this window.</h3>
+<h3 class="mt-2">Successful update. You may close this window if it doesn't automatically close.</h3>
+<script>
+    window.onload = window.close();
+</script>
 {% endblock %}

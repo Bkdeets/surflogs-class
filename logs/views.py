@@ -793,6 +793,21 @@ def autoclose(request):
     return render(request, 'logs/autclose.html')
 ################################################################################
 
+## delete session ############################################################
+def delete_session(request, session_id):
+    session = get_object_or_404(Session, pk=session_id)
+    session.delete()
+    return profile(request)
+################################################################################
+
+
+## delete report ############################################################
+def delete_report(request, report_id):
+    object = get_object_or_404(Report, pk=report_id)
+    object.delete()
+    return profile(request)
+################################################################################
+
 
 
 ### Helper Functions ############################################################

@@ -17,6 +17,9 @@
         <div class="col-md-12">
             <button class="btn w-100" id="session_filter">Make Private</button>
         </div>
+        <div class="col-md-12">
+            <a href="{% url 'logs:delete_session' session.session_id %}" class="btn w-100" target="_blank">Delete</a>
+        </div>
     </div>
 </div>
 {% endif %}
