@@ -58,6 +58,7 @@ def signup(request):
         'user':user,
         'user_form':form,
         'errors':errors,
+        'profile':Profile.objects.filter(user=user)[0]
     }
     return render(request, 'logs/signup.html', context)
 ################################################################################
@@ -134,6 +135,7 @@ def detail(request, session_id):
         'time_surfed_tuples':time_surfed_tuples,
         'is_users': user == session.user,
         'photos':photos,
+        'profile':Profile.objects.filter(user=user)[0],
         'user':user,
     }
     return render(request, 'logs/detail.html', context)
@@ -284,6 +286,7 @@ def profileEdit(request):
         'errors': errors,
         'profile_edit_form': profile_edit_form,
         'user_edit_form': user_edit_form,
+        'profile':Profile.objects.filter(user=user)[0]
     }
     return render(request, 'logs/profile_edit.html', context)
 ################################################################################
@@ -348,6 +351,7 @@ def session_list(request):
         'user':user,
         'sessions':sessions,
         'headers':headers,
+        'profile':Profile.objects.filter(user=user)[0]
     }
     return render(request, 'logs/session_list.html', context)
 ################################################################################
@@ -427,7 +431,8 @@ def post_session(request):
         'wave_data_form':wave_data_form,
         'new_spot_form':new_spot_form,
         'image_form':image_form,
-        'errors':errors
+        'errors':errors,
+        'profile':Profile.objects.filter(user=user)[0]
     }
 
     return render(request, 'logs/post_session.html', context)
@@ -491,7 +496,8 @@ def edit_session(request, session_id):
         'wave_data_form':wave_data_form,
         'new_spot_form':new_spot_form,
         'image_form':image_form,
-        'errors':errors
+        'errors':errors,
+        'profile':Profile.objects.filter(user=user)[0]
     }
 
     return render(request, 'logs/post_session.html', context)
@@ -537,7 +543,8 @@ def add_photos(request, referencing_id, is_session):
     context = {
         'user':user,
         'image_form':image_form,
-        'errors':errors
+        'errors':errors,
+        'profile':Profile.objects.filter(user=user)[0]
     }
 
     return render(request, 'logs/add_photos.html', context)
@@ -561,6 +568,7 @@ def report(request, report_id):
         'is_users': user == report.user,
         'photos':photos,
         'user':user,
+        'profile':Profile.objects.filter(user=user)[0]
     }
     return render(request, 'logs/report.html', context)
 ################################################################################
@@ -593,7 +601,8 @@ def create_spot(request):
     context = {
         'user':user,
         'new_spot_form':new_spot_form,
-        'errors':errors
+        'errors':errors,
+        'profile':Profile.objects.filter(user=user)[0]
     }
 
     return render(request, 'logs/spot_create.html', context)
@@ -658,7 +667,8 @@ def post_report(request):
         'image_form':image_form,
         'new_spot_form':new_spot_form,
         'type':"Post",
-        'errors':errors
+        'errors':errors,
+        'profile':Profile.objects.filter(user=user)[0]
     }
 
     return render(request, 'logs/post_report.html', context)
@@ -719,7 +729,8 @@ def edit_report(request, report_id):
         'wave_data_form':wave_data_form,
         'new_spot_form':new_spot_form,
         'image_form':image_form,
-        'errors':errors
+        'errors':errors,
+        'profile':Profile.objects.filter(user=user)[0]
     }
 
     return render(request, 'logs/post_report.html', context)
@@ -750,7 +761,8 @@ def upload_profile_pic(request):
     context = {
         'user':user,
         'form':form,
-        'errors':errors
+        'errors':errors,
+        'profile':Profile.objects.filter(user=user)[0]
     }
     return render(request, 'logs/upload_photo.html', context)
 ################################################################################
@@ -773,7 +785,8 @@ def user_summary(request, username="default"):
             'user_summary' : user_summary,
             'assoc_user' : assoc_user,
             'sessions' : sessions,
-            'user' :user
+            'user' :user,
+            'profile':Profile.objects.filter(user=user)[0]
         }
         return render(request, 'logs/user_summary.html', context)
     else:
@@ -803,6 +816,7 @@ def spot_view(request, spot_name="default"):
         'numSurfers' : len(sessions), #Opportunity to have an SQL
         'averageWaveHeight' : averageWaveHeight,
         'averageSessionRating' : averageSessionRating,
+        'profile': Profile.objects.filter(user=user)[0],
         'user' : user
     }
     return render(request, 'logs/spot_view.html', context)
@@ -911,7 +925,7 @@ def report_search(request, searchText):
             reports = list(chain(reports, found_reports))
 
         for report in reports:
-            photos = Photo.objects.filter(referencing_id=session.session_id, referencing_object="Session")
+            photos = Photo.objects.filter(referencing_id=report.report_id, referencing_object="Report")
             photo = None
             if photos:
                 for photo1 in photos:
@@ -923,7 +937,7 @@ def report_search(request, searchText):
     else:
         reports = Report.objects.all()
         for report in reports:
-            photos = Photo.objects.filter(referencing_id=session.session_id, referencing_object="Session")
+            photos = Photo.objects.filter(referencing_id=report.report_id, referencing_object="Report")
             photo = None
             if photos:
                 for photo1 in photos:

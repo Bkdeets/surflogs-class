@@ -113,6 +113,9 @@
 
     function searchObject() {
         var searchText = document.getElementById("search_bar").value;
+        if(!searchText) {
+            searchText = "All";
+        }
         console.log(searchText);
         console.log(searchFilter);
 
