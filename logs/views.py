@@ -216,7 +216,8 @@ def profile(request):
             'averageWaveHeight':averageWaveHeight,
             'avgStartTime':avgStartTime,
             'avgEndTime':avgEndTime,
-            'is_users':is_users
+            'is_users':is_users,
+            'profile':Profile.objects.filter(user=user)[0]
         }
         return render(request, 'logs/profile.html',context)
     else:

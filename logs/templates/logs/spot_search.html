@@ -68,8 +68,9 @@
         <div class="row">
             <div class="col-sm-1"></div>
             <div class="col-sm-3">
+                {% if profile.photo != 'profile-photos/None/no-img.jpg' %}
                 <img class="rounded-circle" src="{{profile.photo.url}}" height="50px" width="50px">
-            </div>
+                {% endif %} </div>
             <div class="col-sm-7 vertical-center height-50px mb-0 pb-0">
                 <h4>{{ user.username }}</h4>
             </div>

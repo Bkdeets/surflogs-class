@@ -17,7 +17,11 @@
                 {% if user.is_authenticated %}
                 <li class="nav-item dropdown">
                     <a class="nav-link dropdown-toggle" href="#" id="navbarDropdownMenuLink" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                        Profile
+                        {% if profile.photo != 'profile-photos/None/no-img.jpg' %}
+                            <img class="rounded-circle" src="{{profile.photo.url}}" height="30px" width="30px">
+                        {% else %}
+                            <span class="oi oi-person"></span>
+                        {% endif %}
                     </a>
                     <div class="dropdown-menu" aria-labelledby="navbarDropdownMenuLink">
                         <a class="dropdown-item" href="{% url 'logs:profile' %}">View Profile</a>
