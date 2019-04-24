@@ -18,16 +18,35 @@
       <td>{{ report.time }}</td>
       <td>{{ report.wave_quality }}</td>
       <td>{{ report.rating }}</td>
+      {% if is_users %}
+        <td><span class="oi oi-circle-x" onclick="confirmDelete({{report.report_id}})"></span></td>
+      {% endif %}
     </tr>
     {% endfor %}
   </tbody>
 </table>
 
 <script>
-    jQuery(document).ready(function($) {
-        $(".clickable-row").click(function() {
-            window.location = $(this).data("href");
+        var in_confirm = false;
+        jQuery(document).ready(function($) {
+            if(!in_confirm) {
+                $(".clickable-row").click(function() {
+                    window.location = $(this).data("href");
+                });
+            } else {
+                in_confirm = false;
+            }
         });
-    });
+
+        function confirmDelete(id) {
+            in_confirm = true;
+            var is_delete = confirm("Delete this report?");
+            if (is_delete == true) {
+                window.open("/"+id.toString()+"/delete_report");
+                location.reload();
+            } else {
+                location.href="/profile";
+            }
+        }
 </script>
 {% endblock %}

@@ -4,87 +4,91 @@
 
 {% block content %}
 <h1 class="mt-2">Post Report</h1>
-
-<form method="post">
-{% csrf_token %}
-    <div class="form-row">
-        <div class="input-group date col-md-6 mb-0" id="datetimepicker2" data-target-input="nearest">
-            {{ report_post_form.date }}
-            <div class="input-group-append" data-target="#datetimepicker2" data-toggle="datetimepicker">
-                <div class="input-group-text"><i class="fa fa-calendar"></i></div>
-            </div>
-        </div>
-        <div class="form-group col-md-6 mb-0">
-        </div>
-    </div>
-    <br>
-    <div class="form-row">
-        <div class="input-group date col-md-6 mb-0" id="datetimepicker3" data-target-input="nearest">
-            {{ report_post_form.time }}
-            <div class="input-group-append" data-target="#datetimepicker3" data-toggle="datetimepicker">
-                <div class="input-group-text"><i class="fa fa-clock-o"></i></div>
-            </div>
-        </div>
-        <div class="form-group col-md-6 mb-0">
-        </div>
-    </div>
-    <div class="form-row">
-        <div class="form-group col-md-6 mb-0">
-            {{ report_post_form.spot|as_crispy_field }}
-        </div>
-        <div class="form-group col-md-6 mb-0">
-            <p class="col-form-label text-white">""</p>
-            <a href="{% url 'logs:new_spot' %}" class="btn" target="_blank"> New Spot </a>
-        </div>
-    </div>
-
-    <div class="form-row">
-        <div class="form-group col-md-6 mb-0">
-            {{ report_post_form.wave_quality|as_crispy_field }}
-        </div>
-        <div class="form-group col-md-6 mb-0">
-        </div>
-    </div>
-
-    <div class="form-row">
-        {{ report_post_form.notes|as_crispy_field }}
-    </div>
-
-
-    <div class="form-row">
-        <div class="form-group col-md-4 mb-0">
-            {{ wave_data_form.tide|as_crispy_field }}
-        </div>
-        <div class="form-group col-md-4 mb-0">
-            {{ wave_data_form.crowd|as_crispy_field }}
-        </div>
-        <div class="form-group col-md-4 mb-0">
-            {{ wave_data_form.conditions|as_crispy_field }}
-        </div>
-    </div>
-
-    <div class="form-row">
-        <div class="form-group col-md-6 mb-0">
-            {{ wave_data_form.wave_height|as_crispy_field }}
-        </div>
-        <div class="form-group col-md-6 mb-0">
-            {{ wave_data_form.wave_period|as_crispy_field }}
-        </div>
-    </div>
-
-    <div class="form-row">
-        <div class="form-group col-md-6 mb-0">
-            {{ wave_data_form.wind_dir|as_crispy_field }}
-        </div>
-        <div class="form-group col-md-6 mb-0">
-            {{ wave_data_form.wind_speed|as_crispy_field }}
-        </div>
-    </div>
+<hr>
+<div class="card">
     <div class="card-body">
-        {{ image_form|crispy }}
+        <form method="post">
+            {% csrf_token %}
+            <div class="form-row">
+                <div class="input-group date col-md-6 mb-0" id="datetimepicker2" data-target-input="nearest">
+                    {{ report_post_form.date }}
+                    <div class="input-group-append" data-target="#datetimepicker2" data-toggle="datetimepicker">
+                        <div class="input-group-text"><i class="fa fa-calendar"></i></div>
+                    </div>
+                </div>
+                <div class="form-group col-md-6 mb-0">
+                </div>
+            </div>
+            <br>
+            <div class="form-row">
+                <div class="input-group date col-md-6 mb-0" id="datetimepicker3" data-target-input="nearest">
+                    {{ report_post_form.time }}
+                    <div class="input-group-append" data-target="#datetimepicker3" data-toggle="datetimepicker">
+                        <div class="input-group-text"><i class="fa fa-clock-o"></i></div>
+                    </div>
+                </div>
+                <div class="form-group col-md-6 mb-0">
+                </div>
+            </div>
+            <div class="form-row">
+                <div class="form-group col-md-6 mb-0">
+                    {{ report_post_form.spot|as_crispy_field }}
+                </div>
+                <div class="form-group col-md-6 mb-0">
+                    <p class="col-form-label text-white">""</p>
+                    <a href="{% url 'logs:new_spot' %}" class="btn" target="_blank"> New Spot </a>
+                </div>
+            </div>
+
+            <div class="form-row">
+                <div class="form-group col-md-6 mb-0">
+                    {{ report_post_form.wave_quality|as_crispy_field }}
+                </div>
+                <div class="form-group col-md-6 mb-0">
+                </div>
+            </div>
+
+            <div class="form-row">
+                {{ report_post_form.notes|as_crispy_field }}
+            </div>
+
+
+            <div class="form-row">
+                <div class="form-group col-md-4 mb-0">
+                    {{ wave_data_form.tide|as_crispy_field }}
+                </div>
+                <div class="form-group col-md-4 mb-0">
+                    {{ wave_data_form.crowd|as_crispy_field }}
+                </div>
+                <div class="form-group col-md-4 mb-0">
+                    {{ wave_data_form.conditions|as_crispy_field }}
+                </div>
+            </div>
+
+            <div class="form-row">
+                <div class="form-group col-md-6 mb-0">
+                    {{ wave_data_form.wave_height|as_crispy_field }}
+                </div>
+                <div class="form-group col-md-6 mb-0">
+                    {{ wave_data_form.wave_period|as_crispy_field }}
+                </div>
+            </div>
+
+            <div class="form-row">
+                <div class="form-group col-md-6 mb-0">
+                    {{ wave_data_form.wind_dir|as_crispy_field }}
+                </div>
+                <div class="form-group col-md-6 mb-0">
+                    {{ wave_data_form.wind_speed|as_crispy_field }}
+                </div>
+            </div>
+            <div class="card-body">
+                {{ image_form|crispy }}
+            </div>
+            <div class="center">
+                <button type="submit" class="btn text-white nav-color">Post</button>
+            </div>
     </div>
-<div class="center">
-    <button type="submit" class="btn text-white nav-color">Post</button>
 </div>
 <p> {{ errors }} </p>
 </form>

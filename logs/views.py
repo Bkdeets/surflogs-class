@@ -16,6 +16,7 @@ import datetime
 from django.utils import timezone
 from PIL import Image
 from bootstrap_modal_forms.generic import BSModalCreateView
+from itertools import chain
 ################################################################################
 SESSION_HEADERS = ["User","Date","Spot","Start","End","Rating"]
 REPORT_HEADERS = ["User","Date","Spot","Time","Quality"]
@@ -126,7 +127,7 @@ def detail(request, session_id):
             time_surfed_tuples.append(val)
 
     raw_op = RawOperations()
-    photos = Photo.objects.filter(referencing_id=session_id)
+    photos = Photo.objects.filter(referencing_id=session_id, referencing_object="Session")
 
     context = {
         'session':session,
@@ -158,10 +159,17 @@ def profile(request):
         ## Aggregate queries
         numSessions = raw_op.execSQL('SELECT COUNT(*) FROM logs_session WHERE user_id = %s',[user.id])[0][0]
         waveCount = raw_op.execSQL('SELECT SUM(waves_caught) FROM logs_session WHERE user_id = %s',[user.id])[0][0]
-        averageRating = round(raw_op.execSQL('SELECT AVG(rating) FROM logs_session WHERE user_id = %s',[user.id])[0][0],2)
+        avgRating = raw_op.execSQL('SELECT AVG(rating) FROM logs_session WHERE user_id = %s',[user.id])[0][0]
+        if avgRating:
+            averageRating = round(avgRating,2)
+        else:
+            averageRating = 0
+
 
         ## Nested queries
         averageWaveHeight = raw_op.execSQL('SELECT AVG(wave_height) FROM logs_wave_data WHERE (SELECT wave_data_id FROM logs_session WHERE user_id = %s) = logs_wave_data.wave_data_id;',[user.id])[0][0]
+        if averageWaveHeight:
+            averageWaveHeight = round(averageWaveHeight,2)
 
         ## Stored function?
         #raw_op.build_stored_functions()
@@ -291,7 +299,7 @@ def feed(request):
     sessions = Session.objects.order_by('-date')[:30]
     sessions_with_image = []
     for session in sessions:
-        photos = Photo.objects.filter(referencing_id=session.session_id)
+        photos = Photo.objects.filter(referencing_id=session.session_id, referencing_object="Session")
         photo = None
         if photos:
             for photo1 in photos:
@@ -308,6 +316,7 @@ def feed(request):
         'sessions':sessions,
         'sessions_with_image':sessions_with_image,
         'reports':reports,
+        'profile':Profile.objects.filter(user=user)[0],
         'session_headers':SESSION_HEADERS,
         'report_headers':REPORT_HEADERS
     }
@@ -391,6 +400,7 @@ def post_session(request):
                 session.wave_data = wave_data
                 session.save()
                 photo.referencing_id = session.session_id
+                photo.referencing_object = "Session"
                 photo.save()
 
                 return redirect('logs:detail',session.session_id)
@@ -454,7 +464,6 @@ def edit_session(request, session_id):
                 wave_data.save()
                 session.wave_data = wave_data
                 session.save()
-                print(session.session_id)
                 photo.referencing_id = session.session_id
                 photo.save()
 
@@ -506,6 +515,7 @@ def add_photos(request, referencing_id, is_session):
             if image_form.is_valid():
                 photo = image_form.save()
                 photo.referencing_id = referencing_id
+                photo.referencing_object = "Session" if is_session else "Report"
                 photo.save()
                 if is_session:
                     print("session")
@@ -540,8 +550,10 @@ def report(request, report_id):
     else:
         user = None
 
+    for photo in Photo.objects.filter(referencing_object="Report"):
+        print(photo.image.url)
     report = get_object_or_404(Report, pk=report_id)
-    photos = Photo.objects.filter(referencing_id=report_id)
+    photos = Photo.objects.filter(referencing_id=report_id, referencing_object="Report")
 
     context = {
         'report':report,
@@ -604,18 +616,22 @@ def post_report(request):
             image_form = ImageUploadForm(request.POST, request.FILES)
 
             if report_post_form.is_valid() and wave_data_form.is_valid() and image_form.is_valid():
+                photo = image_form.save(commit=False)
                 wave_data = wave_data_form.save(commit=False)
                 wave_data.date = report_post_form.cleaned_data.get('date')
                 wave_data.spot = report_post_form.cleaned_data.get('spot')
                 wave_data.save()
 
+                print(photo)
+                print(photo.image)
                 # Calling raw sql to do an INSERT operation with Prepared Statements
                 report_id = raw_op.processReportFormAndReturnId(report_post_form=report_post_form, user=user.id, wave_data=wave_data.wave_data_id)
 
-                photo = image_form.save()
                 photo.referencing_id = report_id
+                photo.referencing_object = "Report"
                 photo.save()
-
+                print(photo)
+                print(photo.image)
 
                 return redirect('logs:report', report_id)
 
@@ -727,7 +743,7 @@ def upload_profile_pic(request):
         else:
             errors = form.errors
     else:
-        form = ImageUploadForm({'referencing_id':user.id})
+        form = ImageUploadForm({'referencing_id':user.id, 'referencing_object':'User'})
 
 
     context = {
@@ -774,17 +790,180 @@ def spot_view(request, spot_name="default"):
 
     spot = Spot.objects.filter(name=spot_name)[0]
     sessions = Session.objects.filter(spot=spot)[::-1]
-    print(spot_name)
-    print(spot)
+    wave_datum = Wave_Data.objects.filter(spot=spot)
+
+    averageWaveHeight = round(sum([wdata.wave_height for wdata in wave_datum])/len(wave_datum),2)
+    averageSessionRating = round(sum([sess.rating for sess in sessions])/len(sessions),2)
+
     context = {
         'spot' : spot,
         'sessions' : sessions,
         'numSessions' : len(sessions),
         'numSurfers' : len(sessions), #Opportunity to have an SQL
+        'averageWaveHeight' : averageWaveHeight,
+        'averageSessionRating' : averageSessionRating,
         'user' : user
     }
     return render(request, 'logs/spot_view.html', context)
 ################################################################################
+
+## SEarch Views ################################################################
+
+### user search #######################################################
+def user_search(request, searchText):
+    if request.user and request.user.username != '':
+        user = request.user
+    else:
+        user = None
+    users_with_profile = []
+    if searchText != "All":
+        users = User.objects.filter(username__icontains=searchText)
+        fname_users = User.objects.filter(first_name__icontains=searchText)
+        lname_users = User.objects.filter(last_name__icontains=searchText)
+
+        users = list(chain(users, lname_users, fname_users))
+
+        for found_user in users:
+            profile = Profile.objects.filter(user=found_user)[0]
+            users_with_profile.append((found_user,profile))
+    else:
+        users = User.objects.all()
+        for found_user in users:
+            profile = Profile.objects.filter(user=found_user)
+            if profile:
+                users_with_profile.append((found_user,profile[0]))
+
+
+
+    context = {
+        'user' : user,
+        'users' : users_with_profile,
+        'profile':Profile.objects.filter(user=user)[0],
+        'searchText' : searchText
+    }
+    return render(request, 'logs/user_search.html', context)
+################################################################################
+
+
+
+### session search #######################################################
+def session_search(request, searchText):
+    if request.user and request.user.username != '':
+        user = request.user
+    else:
+        user = None
+    sessions_with_image = []
+    if searchText != "All":
+        sessions = Session.objects.filter(notes__icontains=searchText)
+        spots = Spot.objects.filter(name__icontains=searchText)
+        for spot in spots:
+            found_sessions = Session.objects.filter(spot=spot)
+            sessions = list(chain(sessions, found_sessions))
+
+        for session in sessions:
+            photos = Photo.objects.filter(referencing_id=session.session_id, referencing_object="Session")
+            photo = None
+            if photos:
+                for photo1 in photos:
+                    last = str(photo1.image).split("/")[-1]
+                    if last != 'no-img.jpg':
+                        photo = photo1
+                        break
+            sessions_with_image.append((session,photo))
+    else:
+        sessions = Session.objects.order_by('-date')[:30]
+        for session in sessions:
+            photos = Photo.objects.filter(referencing_id=session.session_id, referencing_object="Session")
+            photo = None
+            if photos:
+                for photo1 in photos:
+                    last = str(photo1.image).split("/")[-1]
+                    if last != 'no-img.jpg':
+                        photo = photo1
+                        break
+            sessions_with_image.append((session,photo))
+
+    context = {
+        'user' : user,
+        'sessions' : sessions_with_image,
+        'profile':Profile.objects.filter(user=user)[0],
+        'searchText' : searchText
+    }
+    return render(request, 'logs/session_search.html', context)
+################################################################################
+
+
+
+### report search #######################################################
+def report_search(request, searchText):
+    if request.user and request.user.username != '':
+        user = request.user
+    else:
+        user = None
+    reports_with_photo = []
+    if searchText != "All":
+        reports = Report.objects.filter(notes__icontains=searchText)
+        spots = Spot.objects.filter(name__icontains=searchText)
+
+        for spot in spots:
+            found_reports = Report.objects.filter(spot=spot)
+            reports = list(chain(reports, found_reports))
+
+        for report in reports:
+            photos = Photo.objects.filter(referencing_id=session.session_id, referencing_object="Session")
+            photo = None
+            if photos:
+                for photo1 in photos:
+                    last = str(photo1.image).split("/")[-1]
+                    if last != 'no-img.jpg':
+                        photo = photo1
+                        break
+            reports_with_photo.append((report,photo))
+    else:
+        reports = Report.objects.all()
+        for report in reports:
+            photos = Photo.objects.filter(referencing_id=session.session_id, referencing_object="Session")
+            photo = None
+            if photos:
+                for photo1 in photos:
+                    last = str(photo1.image).split("/")[-1]
+                    if last != 'no-img.jpg':
+                        photo = photo1
+                        break
+            reports_with_photo.append((report,photo))
+
+    context = {
+        'user' : user,
+        'reports' : reports_with_photo,
+        'profile':Profile.objects.filter(user=user)[0],
+        'searchText' : searchText
+    }
+    return render(request, 'logs/report_search.html', context)
+################################################################################
+
+
+
+
+
+### spot search #######################################################
+def spot_search(request, searchText):
+    if request.user and request.user.username != '':
+        user = request.user
+    else:
+        user = None
+    spots = Spot.objects.all()
+    if searchText != "All":
+        spots = Spot.objects.filter(name__icontains=searchText)
+
+    context = {
+        'user' : user,
+        'spots' : spots,
+        'searchText' : searchText,
+        'profile':Profile.objects.filter(user=user)[0]
+    }
+    return render(request, 'logs/spot_search.html', context)
+################################################################################
+
 
 
 
@@ -806,7 +985,7 @@ def delete_session(request, session_id):
 ## delete report ############################################################
 def delete_report(request, report_id):
     object = get_object_or_404(Report, pk=report_id)
-    object.delete()
+    Report.objects.filter(report_id=report_id).delete()
     return profile(request)
 ################################################################################
 
@@ -863,8 +1042,4 @@ def totalTime(sessions):
     }
 
     return total_time
-
-
-
-
 ################################################################################

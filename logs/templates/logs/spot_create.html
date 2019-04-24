@@ -5,11 +5,15 @@
 <h1 class="mt-2">New Spot</h1>
 
 <form method="post" enctype="multipart/form-data">
+    <div class=card>
+    <div class="card-body">
     {% csrf_token %}
     {{ new_spot_form|crispy }}
     <div class="center">
-        <button type="submit" class="btn nav-color">Save</button>
+        <button type="submit" class="btn nav-color text-white">Save</button>
     </div>
     <p> {{ errors }} </p>
+    </div>
+    </div>
 </form>
 {% endblock %}

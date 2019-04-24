@@ -6,6 +6,7 @@ from django.dispatch import receiver
 from django.utils import timezone
 from surflogs.storage_backends import PrivateMediaStorage
 from PIL import Image
+from django.db import transaction
 
 
 
@@ -25,7 +26,7 @@ class Spot(models.Model):
 
 class Wave_Data(models.Model):
     wave_data_id =  models.AutoField(primary_key=True)
-    date =          models.DateField('date', default=timezone.now)
+    date =          models.DateTimeField('date', default=timezone.now)
     time =          models.TimeField('time', default=timezone.now)
     spot =          models.ForeignKey(Spot, on_delete=models.CASCADE, default=1)
     tide =          models.CharField(max_length=200)
@@ -63,6 +64,11 @@ class Session(models.Model):
     def __str__(self):
         return "Session at " + self.spot.name + " from " + str(self.start_time) + " to " + str(self.end_time) + " on " + str(self.date.date()) + "."
 
+    @transaction.atomic
+    def delete():
+        Photo.objects.filter(referencing_id=self.report_id, referencing_object="Session").delete()
+        return super().delete()
+
 
 class Profile(models.Model):
     user =          models.OneToOneField(User, on_delete=models.CASCADE)
@@ -70,8 +76,6 @@ class Profile(models.Model):
     homespot =      models.ForeignKey(Spot, on_delete=models.CASCADE, blank=True, null=True)
     photo =         models.FileField(storage=PrivateMediaStorage(), default='profile-photos/None/no-img.jpg')
 
-    def __str__(self):
-        return user.first_name + " " + user.last_name
 
 
 class Report(models.Model):
@@ -87,11 +91,17 @@ class Report(models.Model):
     def __str__(self):
         return "Report: " + self.spot.name + " at " + str(self.date.date()) + "."
 
+    @transaction.atomic
+    def delete():
+        Photo.objects.filter(referencing_id=self.report_id, referencing_object="Report").delete()
+        return super().delete()
+
 
 class Photo(models.Model):
-    photo_id =          models.AutoField(primary_key=True)
-    referencing_id =    models.IntegerField(null=True)
-    image =             models.FileField(storage=PrivateMediaStorage(),default='photos/None/no-img.jpg')
+    photo_id =           models.AutoField(primary_key=True)
+    referencing_id =     models.IntegerField(null=True)
+    referencing_object = models.TextField(null=True)
+    image =              models.FileField(storage=PrivateMediaStorage(),default='photos/None/no-img.jpg')
 
 
 

@@ -59,6 +59,7 @@ class RawOperations:
 
             date = self.convertDate(str(fields['date']))
             time = self.convertTime(str(fields['time']))
+            notes = fields['notes']
 
             cursor.execute(prepared,(
                 date,
@@ -70,9 +71,9 @@ class RawOperations:
                 str(wave_data)
             ))
             print("Successfully inserted new report into Report")
-            report = Report.objects.filter(user=user)[0]
-            #report.date = self.dateTimeConvert(fields['date'])
-            #report.save()
+            report = Report.objects.filter(user=user, notes=notes, wave_data=wave_data)[0]
+            print(report)
+            print(report.notes)
             return report.report_id
 
     def convertDate(self, date_string):
@@ -83,8 +84,8 @@ class RawOperations:
         numbers, time_of_day = time_string.strip().split(" ")
         hours, minutes = numbers.split(":")
         if time_of_day == "PM":
-            hours = hours + 12
-        return hours+":"+minutes+":00.000000+00:00"
+            hours = int(hours) + 12
+        return str(hours)+":"+minutes+":00.000000+00:00"
 
 
 

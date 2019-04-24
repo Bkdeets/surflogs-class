@@ -1,20 +1,7 @@
-{% extends 'base.html' %}
+{% extends 'spot_view_template.html' %}
 {% load static %}
 
 {% block content %}
-<script src="{% static 'logs/spot_view.js' %}"></script>
-
-<!-- really want a big header with a spot image -->
-<div class="row">
-    <div class="col-md-12 text-center">
-        <h2> {{ spot.name }} </h2>
-        <br>
-        <p> {{ spot.type }} <p>
-        <p> {{ spot.location }} </p>
-        <p> {{ spot.description }} </p>
-    </div>
-</div>
-<br>
 <div>
     <div class="row mb-4">
         <div class="col-md-6 text-center">
@@ -37,17 +24,13 @@
         </div>
     </div>
     <div class="row mb-4">
-        <div class="col-md-4 text-center">
-            <p> Best Wind Direction </p>
-            <h5>{{numSessions}}</h5>
+        <div class="col-md-6 text-center">
+            <p> Average Session Rating </p>
+            <h5>{{averageSessionRating}}</h5>
         </div>
-        <div class="col-md-4 text-center">
-            <p> Best Period </p>
-            <h5> {{waveCount}} </h5>
-        </div>
-        <div class="col-md-4 text-center">
-            <p> Time Surfed </p>
-            <h5> {{timeSurfed}} {{unitsSurfed}} </h5>
+        <div class="col-md-6 text-center">
+            <p> Average Wave Height </p>
+            <h5> {{averageWaveHeight}} ft</h5>
         </div>
     </div>
 </div>
@@ -75,3 +58,6 @@
 </div>
 
 {% endblock %}
+
+
+<!--Hey guys! Its been an awesome year for the Surf Club and I've had a lot of fun meeting and surfing with everyone. The time has come for us to pass it off for next year. We're planning on having elections this Thursday at 7pm in the Piano Room. If you want to be a part of surfing at UNCW and have an impact on the Surf Club then show up and give your vote or run for a position -->

@@ -29,5 +29,9 @@ urlpatterns = [
     path('<int:referencing_id>/upload_photo/<is_session>', views.add_photos, name='add_photos'),
     path('<int:session_id>/delete_session/', views.delete_session, name='delete_session'),
     path('<int:report_id>/delete_report/', views.delete_report, name='delete_report'),
+    path('search/Spot/<str:searchText>', views.spot_search, name='spot_search'),
+    path('search/User/<str:searchText>', views.user_search, name='user_search'),
+    path('search/Session/<str:searchText>', views.session_search, name='session_search'),
+    path('search/Report/<str:searchText>', views.report_search, name='report_search'),
 
 ]

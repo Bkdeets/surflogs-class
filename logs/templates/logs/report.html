@@ -1,4 +1,4 @@
-{% extends 'base.html' %}
+{% extends 'feed_base.html' %}
 
 {% load static %}
 
@@ -8,7 +8,7 @@
     $('.carousel').carousel()
 </script>
 {% if is_users %}
-<div class="side-scroll container shadow rounded">
+<div class="side-scroll container shadow rounded bg-white">
     <div class="row">
         <div class="col-md-12">
             <a href="{% url 'logs:edit_report' report.report_id %}" class="btn w-100" target="_blank">Edit</a>
@@ -25,10 +25,11 @@
     </div>
 </div>
 {% endif %}
+<div class="card">
+    <div class="card-body">
 <div class="row">
-
     <div class="col-md-12 text-center">
-        <h2> {{report.spot.name}} </h2>
+        <a href="{% url 'logs:spot_view' report.spot.name %}"><h2> {{report.spot.name}} </h2></a>
         <h5> {{report.date.date}} </h5>
         <h6> {{report.time}}</h6>
         <br>
@@ -69,7 +70,8 @@
   </div>
   {% endfor %}
 </div>
-
+</div>
+</div>
 
 
 <script>

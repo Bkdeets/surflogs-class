@@ -118,7 +118,8 @@ class NewSpotForm(ModelForm):
             'ideal_wind_dir',
             'ideal_swell_dir',
             'ideal_swell_height',
-            'ideal_swell_period'
+            'ideal_swell_period',
+            'description'
         )
 
 class SessionForm(ModelForm):

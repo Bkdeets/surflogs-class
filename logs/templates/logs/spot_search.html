@@ -33,32 +33,29 @@
     <br>
 
     <div id="data_display">
-    {% for session in sessions_with_image %}
-    <div id="card_view" class="card mb-5 clickable-card" data-href="{% url 'logs:detail' session.0.session_id %}">
-        <div class="card-body">
-            <h5 class="card-title">{{session.0.user.username}}</h5>
-        </div>
-        {% if session.1 %}
-        <img class="card-img-top" src="{{session.1.image.url}}" alt="No Image">
-        {% else %}
-        <div style="height:10px;"></div>
-        {% endif %}
-        <div class="card-body">
-            <div class="row">
-                <div class="col-md-4 text-center">
-                    <p><b>{{session.0.date.date}}</b></p>
-                </div>
-                <div class="col-md-4 text-center">
-                    <p><b>{{session.0.spot}}</b></p>
-                </div>
-                <div class="col-md-4 text-center">
-                    <p><b>{{session.0.rating}}</b></p>
-                </div>
+    {% if spots %}
+        {% for spot in spots %}
+        <div id="card_view" class="card mb-5 clickable-card" data-href="{% url 'logs:spot_view' spot.name %}">
+            <div class="card-body">
+                <h5 class="card-title">{{spot.name}}</h5>
             </div>
-            <p class="card-text">{{session.0.notes}}</p>
+            <img class="card-img-top" src="https://i.imgur.com/HkOmA7x.jpg">
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-6 text-center">
+                        <p><b>{{spot.type}}</b></p>
+                    </div>
+                    <div class="col-md-6 text-center">
+                        <p><b>{{spot.location}}</b></p>
+                    </div>
+                </div>
+                <p class="card-text text-center">{{spot.description}}</p>
+            </div>
         </div>
-    </div>
-    {% endfor %}
+        {% endfor %}
+    {% else %}
+        <h3> Looks like there are no Spots containing {{searchText}}. </h3>
+    {% endif %}
     </div>
 </div>
 
@@ -92,6 +89,7 @@
     </div>
 </div>
 
+
 <script>
     var searchFilter = "Default"
     jQuery(document).ready(function($) {
@@ -107,9 +105,6 @@
 
     function searchObject() {
         var searchText = document.getElementById("search_bar").value;
-        if(!searchText) {
-            searchText = "All";
-        }
         console.log(searchText);
         console.log(searchFilter);
 
